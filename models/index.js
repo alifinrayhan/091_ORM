@@ -7,6 +7,23 @@ const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
+
+// Safe startup debug: show which DB parameters are being used (without the password).
+try {
+  const cfg = {
+    username: config.username,
+    database: config.database,
+    host: config.host,
+    port: config.port,
+    dialect: config.dialect
+  };
+  // Only log in non-production to avoid noisy logs in deployed environments.
+  if ((process.env.NODE_ENV || 'development') !== 'production') {
+    console.log('Sequelize config (no password):', cfg);
+  }
+} catch (e) {
+  console.log('Could not print DB config for debugging:', e.message);
+}
 const db = {};
 
 let sequelize;
